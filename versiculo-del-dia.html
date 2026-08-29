@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Versículo del día</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-900:#12141c;
+    --ink-800:#1c2029;
+    --ink-700:#2a2f3b;
+    --parchment:#eee6d6;
+    --parchment-dim:#c9c0ab;
+    --gold:#c9a45c;
+    --gold-soft:#e2c88a;
+    --ember:#8b3a3a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 60% 45% at 50% 18%, rgba(201,164,92,0.10), transparent 60%),
+      var(--ink-900);
+    color:var(--parchment);
+    font-family:'Inter',sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 18px;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .flame{animation:flicker 3.2s ease-in-out infinite;}
+  }
+  @keyframes flicker{
+    0%,100%{opacity:.55; transform:scale(1);}
+    35%{opacity:.85; transform:scale(1.06);}
+    60%{opacity:.65; transform:scale(0.97);}
+    80%{opacity:.9; transform:scale(1.03);}
+  }
+  .page{
+    width:100%;
+    max-width:480px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--parchment-dim);
+    margin-bottom:28px;
+  }
+  .seal{
+    position:relative;
+    width:104px;
+    height:104px;
+    border-radius:50%;
+    border:1px solid rgba(201,164,92,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:30px;
+  }
+  .seal::before{
+    content:'';
+    position:absolute;
+    inset:-14px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(201,164,92,0.35), transparent 70%);
+    filter:blur(2px);
+  }
+  .seal .flame{
+    position:absolute;
+    inset:-6px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(226,200,138,0.55), transparent 65%);
+  }
+  .seal-date{
+    position:relative;
+    z-index:1;
+    font-family:'Fraunces',serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--gold-soft);
+    line-height:1.15;
+  }
+  .seal-date span{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-size:9px;
+    letter-spacing:.18em;
+    font-weight:500;
+    color:var(--parchment-dim);
+    margin-bottom:3px;
+    text-transform:uppercase;
+  }
+  .verse-wrap{
+    position:relative;
+    padding:6px 4px 0;
+  }
+  .dropcap{
+    float:left;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:64px;
+    line-height:.78;
+    padding:6px 8px 0 0;
+    background:linear-gradient(160deg, var(--gold-soft), var(--gold) 55%, var(--ember) 130%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .verse{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:23px;
+    line-height:1.5;
+    color:var(--parchment);
+    text-align:left;
+  }
+  .verse::after{content:'';display:block;clear:both;}
+  .rule{
+    width:46px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin:26px 0 16px;
+  }
+  .reference{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    letter-spacing:.06em;
+    color:var(--gold-soft);
+    font-weight:500;
+  }
+  .note{
+    margin-top:34px;
+    font-size:11.5px;
+    line-height:1.6;
+    color:var(--parchment-dim);
+    max-width:360px;
+  }
+  .refresh{
+    margin-top:22px;
+    background:none;
+    border:1px solid rgba(238,230,214,0.18);
+    color:var(--parchment-dim);
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    letter-spacing:.03em;
+    padding:9px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .refresh:hover, .refresh:focus-visible{
+    border-color:rgba(201,164,92,0.6);
+    color:var(--gold-soft);
+    outline:none;
+  }
+  .refresh:focus-visible{box-shadow:0 0 0 3px rgba(201,164,92,0.25);}
+</style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">Nuevo Testamento</div>
+    <div class="seal">
+      <div class="flame"></div>
+      <div class="seal-date"><span id="weekday"></span><span id="daynum"></span></div>
+    </div>
+    <div class="verse-wrap">
+      <p class="verse" id="verse"></p>
+    </div>
+    <div class="rule"></div>
+    <p class="reference" id="reference"></p>
+    <button class="refresh" id="refresh" aria-label="Ver otro versículo al azar">Ver otro versículo</button>
+    <p class="note">Estas son paráfrasis del Nuevo Testamento, pensadas para la lectura diaria. Si buscas el texto literal, consulta el pasaje en tu Biblia.</p>
+  </main>
+
+<script>
+const verses = [
+  ["Juan 3:16","El amor de Dios por el mundo fue tan grande que entregó a su Hijo único, para que todo el que confíe en él tenga vida eterna."],
+  ["Mateo 6:33","Busca primero el reino de Dios y su justicia, y lo demás se te dará por añadidura."],
+  ["Filipenses 4:13","Todo lo puedo enfrentar gracias a Cristo, que me fortalece."],
+  ["Romanos 8:28","Dios hace que todo lo que ocurre obre para bien de quienes lo aman."],
+  ["Juan 14:6","Jesús dijo: Yo soy el camino, la verdad y la vida; nadie llega al Padre sino por mí."],
+  ["Mateo 11:28","Vengan a mí todos los que están cansados y agobiados, y yo los haré descansar."],
+  ["Juan 16:33","En este mundo tendrán aflicción, pero tengan ánimo: yo he vencido al mundo."],
+  ["Romanos 12:2","No se amolden al pensamiento de este mundo, sino transfórmense renovando su mente."],
+  ["1 Corintios 13:4","El amor es paciente y bondadoso; no tiene envidia ni se comporta con arrogancia."],
+  ["1 Corintios 13:13","Ahora permanecen la fe, la esperanza y el amor, pero el más importante de ellos es el amor."],
+  ["Gálatas 5:22","El fruto del Espíritu es amor, alegría, paz, paciencia, bondad, fidelidad, humildad y dominio propio."],
+  ["Efesios 2:8","Por gracia han sido salvados mediante la fe, y esto no proviene de ustedes: es un regalo de Dios."],
+  ["Efesios 4:32","Sean bondadosos y compasivos unos con otros, perdonándose como Dios los perdonó a ustedes."],
+  ["Filipenses 4:6","No se angustien por nada; en cambio, en toda situación presenten sus peticiones a Dios con oración y gratitud."],
+  ["Filipenses 4:7","Y la paz de Dios, que sobrepasa todo entendimiento, cuidará sus corazones y sus pensamientos."],
+  ["Colosenses 3:23","Todo lo que hagan, háganlo de corazón, como para el Señor y no para los hombres."],
+  ["1 Tesalonicenses 5:16","Estén siempre alegres, oren sin cesar, den gracias en toda circunstancia."],
+  ["2 Timoteo 1:7","Dios no nos dio un espíritu de temor, sino de poder, de amor y de dominio propio."],
+  ["Hebreos 11:1","La fe es la certeza de lo que se espera, la convicción de lo que no se ve."],
+  ["Hebreos 13:5","Nunca te dejaré ni te abandonaré, dice el Señor; por eso podemos vivir sin temor."],
+  ["Santiago 1:5","Si a alguno le falta sabiduría, pídasela a Dios, que da a todos generosamente y sin reproche."],
+  ["Santiago 1:19","Que todos estén listos para escuchar, y sean lentos para hablar y para enojarse."],
+  ["1 Pedro 5:7","Pongan en las manos de Dios todas sus preocupaciones, porque él cuida de ustedes."],
+  ["1 Juan 4:18","En el amor perfecto no hay lugar para el temor, porque el amor echa fuera el temor."],
+  ["1 Juan 4:19","Nosotros amamos porque él nos amó primero."],
+  ["Mateo 5:9","Dichosos los que trabajan por la paz, porque serán llamados hijos de Dios."],
+  ["Mateo 5:16","Que brille la luz de ustedes delante de los demás, para que vean sus buenas obras y glorifiquen a Dios."],
+  ["Mateo 7:7","Pidan y se les dará; busquen y encontrarán; llamen y se les abrirá."],
+  ["Lucas 6:31","Traten a los demás tal como quieren que ellos los traten a ustedes."],
+  ["Lucas 12:34","Donde está tu tesoro, allí también estará tu corazón."],
+  ["Juan 1:1","En el principio ya existía el Verbo, y el Verbo estaba con Dios, y el Verbo era Dios."],
+  ["Juan 8:12","Yo soy la luz del mundo; el que me sigue no andará en tinieblas, sino que tendrá la luz de la vida."],
+  ["Juan 10:10","Yo he venido para que tengan vida, y la tengan en abundancia."],
+  ["Juan 13:34","Les doy un mandamiento nuevo: que se amen los unos a los otros, así como yo los he amado."],
+  ["Juan 15:5","Yo soy la vid, ustedes son las ramas; el que permanece en mí da mucho fruto."],
+  ["Hechos 1:8","Recibirán poder cuando el Espíritu Santo venga sobre ustedes, y serán mis testigos."],
+  ["Hechos 20:35","Hay más dicha en dar que en recibir."],
+  ["Romanos 5:8","Dios demuestra su amor por nosotros en que, cuando aún éramos pecadores, Cristo murió por nosotros."],
+  ["Romanos 10:9","Si confiesas con tu boca que Jesús es el Señor y crees en tu corazón que Dios lo resucitó, serás salvo."],
+  ["Romanos 15:13","Que el Dios de la esperanza los llene de toda alegría y paz al confiar en él."],
+  ["1 Corintios 10:13","Dios es fiel, y no permitirá que sean tentados más allá de lo que puedan soportar."],
+  ["1 Corintios 16:14","Que todo lo que hagan lo hagan con amor."],
+  ["2 Corintios 4:16","Aunque por fuera nos vamos desgastando, por dentro nos renovamos día tras día."],
+  ["2 Corintios 5:17","Si alguien está en Cristo, es una nueva creación; lo viejo pasó y ha llegado lo nuevo."],
+  ["2 Corintios 12:9","Mi gracia te basta, porque mi poder se perfecciona en la debilidad."],
+  ["Gálatas 6:9","No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos si no nos damos por vencidos."],
+  ["Efesios 3:20","Dios puede hacer muchísimo más de lo que podemos pedir o imaginar."],
+  ["Efesios 6:10","Fortalézcanse con el gran poder del Señor."],
+  ["Filipenses 1:6","El que comenzó tan buena obra en ustedes la irá perfeccionando hasta el día de Cristo Jesús."],
+  ["Filipenses 2:3","No hagan nada por egoísmo o vanidad; con humildad consideren a los demás como superiores a ustedes mismos."],
+  ["Filipenses 4:8","Consideren todo lo verdadero, todo lo noble, todo lo justo, todo lo puro y todo lo amable."],
+  ["Colosenses 3:2","Piensen en las cosas de arriba, no en las de la tierra."],
+  ["Colosenses 3:15","Que gobierne en sus corazones la paz de Cristo, a la cual fueron llamados."],
+  ["1 Tesalonicenses 5:18","Den gracias a Dios en toda circunstancia, porque esa es su voluntad para ustedes."],
+  ["2 Tesalonicenses 3:3","El Señor es fiel, y él los fortalecerá y los protegerá del maligno."],
+  ["1 Timoteo 4:12","Que nadie te menosprecie por ser joven; sé un ejemplo en palabra, conducta, amor, fe y pureza."],
+  ["2 Timoteo 4:7","He peleado la buena batalla, he terminado la carrera, he mantenido la fe."],
+  ["Tito 3:5","Nos salvó, no por nuestras propias obras, sino por su misericordia."],
+  ["Hebreos 4:16","Acerquémonos con confianza al trono de la gracia, para hallar misericordia y ayuda en el momento oportuno."],
+  ["Hebreos 12:1","Corramos con paciencia la carrera que tenemos por delante, quitando todo peso que nos estorbe."],
+  ["Hebreos 13:8","Jesucristo es el mismo ayer, hoy y siempre."],
+  ["Santiago 1:2","Hermanos, considérense muy dichosos cuando enfrenten toda clase de pruebas."],
+  ["Santiago 4:8","Acérquense a Dios, y él se acercará a ustedes."],
+  ["1 Pedro 3:15","Estén siempre preparados para responder a todo el que les pida razón de la esperanza que hay en ustedes."],
+  ["1 Pedro 4:8","Sobre todo, ámense los unos a los otros profundamente, porque el amor cubre multitud de faltas."],
+  ["2 Pedro 3:9","El Señor es paciente, porque no quiere que nadie perezca, sino que todos se arrepientan."],
+  ["1 Juan 1:9","Si confesamos nuestros pecados, Dios es fiel y justo para perdonarlos y limpiarnos de toda maldad."],
+  ["1 Juan 3:18","No amemos de palabra ni de labios para afuera, sino con hechos y de verdad."],
+  ["3 Juan 1:2","Ruego que te vaya bien en todo y que tengas buena salud, así como prospera tu alma."],
+  ["Judas 1:24","Al que puede guardarlos para que no caigan, y presentarlos sin mancha delante de su gloria, sea la gloria."],
+  ["Apocalipsis 3:20","Aquí estoy, y llamo a la puerta; si alguien oye mi voz y abre la puerta, entraré."],
+  ["Apocalipsis 21:4","Él enjugará toda lágrima de sus ojos, y ya no habrá muerte ni llanto ni dolor."],
+  ["Mateo 28:20","Y les enseñen a obedecer todo lo que les he mandado; y yo estoy con ustedes siempre, hasta el fin del mundo."],
+  ["Marcos 11:24","Todo lo que pidan en oración, crean que ya lo han recibido, y así les será concedido."],
+  ["Lucas 1:37","Para Dios no hay nada imposible."],
+  ["Lucas 11:9","Pidan, y se les dará; busquen, y encontrarán; llamen, y se les abrirá la puerta."],
+  ["Juan 6:35","Yo soy el pan de vida; el que viene a mí nunca tendrá hambre."],
+  ["Juan 11:25","Yo soy la resurrección y la vida; el que cree en mí, aunque muera, vivirá."],
+  ["Juan 20:29","Dichosos los que sin ver, creen."],
+  ["Hechos 4:12","En ningún otro hay salvación, porque no hay bajo el cielo otro nombre dado a los hombres."],
+  ["Romanos 6:23","La paga del pecado es muerte, pero el regalo de Dios es vida eterna en Cristo Jesús."],
+  ["Romanos 8:31","Si Dios está por nosotros, ¿quién puede estar en contra nuestra?"],
+  ["Romanos 12:12","Alégrense en la esperanza, muestren paciencia en el sufrimiento, perseveren en la oración."],
+  ["1 Corintios 15:58","Manténganse firmes y constantes, dedicados siempre a la obra del Señor, sabiendo que su trabajo no es en vano."],
+  ["Gálatas 2:20","Ya no vivo yo, sino que Cristo vive en mí."],
+  ["Efesios 5:1","Sean, pues, imitadores de Dios, como hijos amados."],
+  ["Filipenses 3:14","Prosigo hacia la meta, para ganar el premio que Dios ofrece mediante su llamado celestial en Cristo Jesús."],
+  ["Hebreos 10:24","Considerémonos unos a otros para estimularnos al amor y a las buenas obras."],
+  ["Santiago 5:16","Confiésense unos a otros sus pecados y oren unos por otros, para que sean sanados."]
+];
+
+function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+function dayOfYear(d){
+  const start = new Date(d.getFullYear(), 0, 0);
+  const diff = d - start;
+  return Math.floor(diff / 86400000);
+}
+
+function render(index){
+  const [ref, text] = verses[index];
+  document.getElementById('verse').innerHTML =
+    '<span class="dropcap">' + text.charAt(0) + '</span>' + text.slice(1);
+  document.getElementById('reference').textContent = ref;
+}
+
+const today = new Date();
+const weekdays = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+document.getElementById('weekday').textContent = weekdays[today.getDay()];
+document.getElementById('daynum').textContent = pad(today.getDate()) + ' / ' + pad(today.getMonth() + 1);
+
+let currentIndex = dayOfYear(today) % verses.length;
+render(currentIndex);
+
+document.getElementById('refresh').addEventListener('click', function(){
+  let next = Math.floor(Math.random() * verses.length);
+  if (verses.length > 1 && next === currentIndex) {
+    next = (next + 1) % verses.length;
+  }
+  currentIndex = next;
+  render(currentIndex);
+});
+</script>
+</body>
+</html>
